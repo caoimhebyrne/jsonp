@@ -7,6 +7,8 @@ pub enum Token {
 
     OpenBrace,
     CloseBrace,
+    OpenSquareBracket,
+    CloseSquareBracket,
     Colon,
     Comma,
 }

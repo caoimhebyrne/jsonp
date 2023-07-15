@@ -50,6 +50,40 @@ impl Parser {
         Ok(JsonValue::Object(map))
     }
 
+    pub fn try_parse_array(&mut self) -> Result<JsonValue, ParserError> {
+        // The first key in an object should always be a OpenSquareBracket.
+        self.expect_token(Token::OpenSquareBracket)?;
+
+        let mut values = vec![];
+
+        loop {
+            // We need to check if the next token is a closing bracket, if it is, then we are finished parsing.
+            match self.element_stream.peek() {
+                Some((token, _)) => {
+                    if token == Token::CloseSquareBracket {
+                        self.element_stream.skip();
+                        self.check_for_trailing_comma()?;
+                        break;
+                    }
+                }
+
+                None => return Err(ParserError::UnexpectedEOF),
+            }
+
+            let value = self.try_parse_value()?;
+            values.push(value);
+
+            let (next_token, location) = self.try_consume()?;
+            match next_token {
+                Token::Comma => {}
+                Token::CloseSquareBracket => break,
+                _ => return Err(ParserError::UnexpectedToken(next_token, location)),
+            }
+        }
+
+        Ok(JsonValue::Array(values))
+    }
+
     // This can be a String literal, boolean literal, number literal, object, etc.
     pub fn try_parse_value(&mut self) -> Result<JsonValue, ParserError> {
         let (first_token, location) = self.try_peek()?;
@@ -68,6 +102,9 @@ impl Parser {
 
                 JsonValue::Number(number.into())
             }
+
+            // An open square bracket denotes an array
+            Token::OpenSquareBracket => self.try_parse_array()?,
 
             // An open brace denotes an object
             Token::OpenBrace => self.parse_object()?,

@@ -34,6 +34,9 @@ impl Tokenizer {
                 '}' => Some(Token::CloseBrace),
                 ':' => Some(Token::Colon),
                 ',' => Some(Token::Comma),
+                '[' => Some(Token::OpenSquareBracket),
+                ']' => Some(Token::CloseSquareBracket),
+
                 '"' => self.try_parse_string()?.into(),
 
                 '\n' => {
