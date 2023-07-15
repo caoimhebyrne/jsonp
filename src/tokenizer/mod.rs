@@ -1,5 +1,7 @@
+pub mod error;
 pub mod token;
 
+pub use error::*;
 pub use token::*;
 
 use crate::{element_stream::ElementStream, location::Location};
@@ -19,7 +21,7 @@ impl Tokenizer {
         }
     }
 
-    pub fn process(&mut self) -> Vec<TokenAndLocation> {
+    pub fn process(&mut self) -> Result<Vec<TokenAndLocation>, TokenizerError> {
         let mut tokens = vec![];
 
         loop {
@@ -32,7 +34,7 @@ impl Tokenizer {
                 '}' => Some(Token::CloseBrace),
                 ':' => Some(Token::Colon),
                 ',' => Some(Token::Comma),
-                '"' => self.try_parse_string(),
+                '"' => self.try_parse_string()?.into(),
 
                 '\n' => {
                     self.line += 1;
@@ -47,29 +49,30 @@ impl Tokenizer {
                     } else if character == ' ' {
                         None
                     } else {
-                        // TODO: Error handling in the tokenizer 💯
-
-                        println!("Unknown character: {}", character);
-                        None
+                        return Err(TokenizerError::UnexpectedCharacter(
+                            character,
+                            self.location(),
+                        ));
                     }
                 }
             };
 
             if let Some(token) = token {
-                tokens.push((
-                    token,
-                    Location {
-                        line: self.line,
-                        column: self.column,
-                    },
-                ));
+                tokens.push((token, self.location()));
             }
         }
 
-        tokens
+        Ok(tokens)
     }
 
-    fn try_parse_string(&mut self) -> Option<Token> {
+    fn location(&self) -> Location {
+        Location {
+            line: self.line,
+            column: self.column,
+        }
+    }
+
+    fn try_parse_string(&mut self) -> Result<Token, TokenizerError> {
         let mut characters = vec![];
 
         loop {
@@ -81,11 +84,15 @@ impl Tokenizer {
                 break;
             }
 
+            if character == '\n' {
+                return Err(TokenizerError::ExpectedCharacter('"', self.location()));
+            }
+
             characters.push(character);
         }
 
         let string = characters.into_iter().collect();
-        Some(Token::String(string))
+        Ok(Token::String(string))
     }
 
     fn try_parse_number(&mut self, character: char) -> Option<Token> {
