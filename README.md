@@ -6,22 +6,31 @@ I'm designing this to pretty print some JSON files, but in the future, I'd like 
 
 ## Usage
 
-At the moment, `jsonp` is configured to read from `./examples/simple.json`
+```shell
+$ cargo install -- path .
+  Installing jsonp v0.1.0 (/Users/caoimhe/Development/jsonp)
 
-```
-$ cargo run
-
+$ jsonp ./examples/simple.json
 Object(
     {
-        "abc": Number(
-            123,
-        ),
+        "exponential": Number(23.59),
+        "abc": Number(123.0),
+        "hello": String("world"),
         "test": Object(
-            {},
+            {
+                "value": Null,
+                "boolean": Boolean(true),
+                "array": Array(
+                    [
+                        Number(1.0),
+                        Number(2.0),
+                        Number(3.0),
+                    ],
+                ),
+                "another_boolean": Boolean(false),
+            },
         ),
-        "hello": String(
-            "world",
-        ),
+        "decimal": Number(123.55435),
     },
 )
 ```
