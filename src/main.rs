@@ -1,4 +1,4 @@
-use std::{fmt::Display, fs};
+use std::{env, fmt::Display, fs, path::Path};
 
 use location::LocatedError;
 use parser::Parser;
@@ -10,7 +10,25 @@ mod parser;
 mod tokenizer;
 
 fn main() {
-    let json = fs::read_to_string("examples/simple.json").unwrap();
+    let args: Vec<String> = env::args().collect();
+    if args.len() <= 1 {
+        eprintln!("Usage: jsonp {{file}}");
+        return;
+    }
+
+    let path = Path::new(&args[1]);
+    if !path.exists() {
+        eprintln!("{} doesn't exist!", args[1]);
+        return;
+    }
+
+    let json = match fs::read_to_string(path) {
+        Ok(value) => value,
+        Err(_) => {
+            eprintln!("Failed to read {}!", args[1]);
+            return;
+        }
+    };
 
     let mut tokenizer = Tokenizer::new(json.clone());
     let tokens = match tokenizer.process() {
