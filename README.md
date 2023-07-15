@@ -8,7 +8,10 @@ I'm designing this to pretty print some JSON files, but in the future, I'd like 
 
 ```shell
 $ cargo install -- path .
-  Installing jsonp v0.1.0 (/Users/caoimhe/Development/jsonp)
+  Installing jsonp v0.1.0
+    Finished release [optimized] target(s) in 0.00s
+  Installing ~/.cargo/bin/jsonp
+    Installed package `jsonp v0.1.0 (executable `jsonp`)
 
 $ jsonp ./examples/simple.json
 Object(
