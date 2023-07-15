@@ -99,7 +99,7 @@ impl Parser {
                 // This token requires no extra parsing, we can consume this token.
                 self.element_stream.skip();
 
-                JsonValue::Number(number.into())
+                JsonValue::Number(number)
             }
 
             Token::Identifier(identifier) => {

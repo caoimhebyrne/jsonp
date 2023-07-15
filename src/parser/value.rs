@@ -3,7 +3,7 @@ use std::collections::HashMap;
 #[derive(Debug)]
 pub enum JsonValue {
     String(String),
-    Number(i64),
+    Number(f64),
     Boolean(bool),
     Null,
 

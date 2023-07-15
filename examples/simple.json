@@ -6,5 +6,7 @@
     "boolean": true,
     "another_boolean": false,
     "value": null
-  }
+  },
+  "decimal": 123.55435,
+  "exponential": 2359e-2
 }

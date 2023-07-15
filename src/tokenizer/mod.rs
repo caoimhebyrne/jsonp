@@ -47,8 +47,7 @@ impl Tokenizer {
                 }
 
                 _ => {
-                    // Try to see if it's a number
-                    if character.is_numeric() {
+                    if Tokenizer::is_json_number(character) {
                         self.try_parse_number(character)
                     } else if character.is_alphanumeric() {
                         self.try_parse_identifier(character)?.into()
@@ -131,7 +130,7 @@ impl Tokenizer {
                 break;
             };
 
-            if !character.is_alphanumeric() {
+            if !Tokenizer::is_json_number(character) {
                 break;
             }
 
@@ -139,12 +138,11 @@ impl Tokenizer {
             characters.push(character);
         }
 
-        let parsed_value = characters
-            .into_iter()
-            .map(|char| char.to_digit(10))
-            .try_fold(0, |ans, i| i.map(|i| ans * 10 + i));
-
-        parsed_value.map(|value| Token::Number(value))
+        let number_string: String = characters.into_iter().collect();
+        match number_string.parse::<f64>() {
+            Ok(value) => Some(Token::Number(value)),
+            Err(_) => None,
+        }
     }
 
     fn consume(&mut self) -> Option<char> {
@@ -155,5 +153,13 @@ impl Tokenizer {
     fn skip(&mut self) {
         self.column += 1;
         self.element_stream.skip()
+    }
+
+    fn is_json_number(character: char) -> bool {
+        return character == '-'
+            || character == '.'
+            || character == 'e'
+            || character == 'E'
+            || character.is_numeric();
     }
 }
