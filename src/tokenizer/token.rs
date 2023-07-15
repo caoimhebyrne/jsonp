@@ -1,3 +1,5 @@
+use crate::location::Location;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Token {
     String(String),
@@ -8,3 +10,5 @@ pub enum Token {
     Colon,
     Comma,
 }
+
+pub type TokenAndLocation = (Token, Location);
