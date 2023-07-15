@@ -38,6 +38,12 @@ impl Tokenizer {
                 ']' => Some(Token::CloseSquareBracket),
 
                 '"' => self.try_parse_string()?.into(),
+
+                '/' => {
+                    self.skip_comment();
+                    continue;
+                }
+
                 ' ' => continue,
 
                 '\n' => {
@@ -72,6 +78,20 @@ impl Tokenizer {
         Location {
             line: self.line,
             column: self.column,
+        }
+    }
+
+    fn skip_comment(&mut self) {
+        loop {
+            let Some(character) = self.element_stream.peek() else {
+                break;
+            };
+
+            if character == '\n' {
+                break;
+            }
+
+            self.element_stream.skip()
         }
     }
 
