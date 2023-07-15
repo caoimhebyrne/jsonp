@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::location::Location;
+use crate::location::{LocatedError, Location};
 
 #[derive(Debug)]
 pub enum TokenizerError {
@@ -8,8 +8,8 @@ pub enum TokenizerError {
     UnexpectedCharacter(char, Location),
 }
 
-impl TokenizerError {
-    pub fn location(&self) -> Option<Location> {
+impl LocatedError for TokenizerError {
+    fn location(&self) -> Option<Location> {
         match self {
             Self::ExpectedCharacter(_, location) => Some(location.clone()),
             Self::UnexpectedCharacter(_, location) => Some(location.clone()),

@@ -1,6 +1,9 @@
 use std::fmt;
 
-use crate::{location::Location, tokenizer::Token};
+use crate::{
+    location::{LocatedError, Location},
+    tokenizer::Token,
+};
 
 #[derive(Debug)]
 pub enum ParserError {
@@ -9,8 +12,8 @@ pub enum ParserError {
     UnexpectedEOF,
 }
 
-impl ParserError {
-    pub fn location(&self) -> Option<Location> {
+impl LocatedError for ParserError {
+    fn location(&self) -> Option<Location> {
         match self {
             Self::ExpectedToken(_, _, location) => Some(location.clone()),
             Self::UnexpectedToken(_, location) => Some(location.clone()),
