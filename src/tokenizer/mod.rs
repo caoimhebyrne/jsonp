@@ -14,12 +14,12 @@ pub struct Tokenizer {
 }
 
 impl Tokenizer {
-    pub fn new(content: String) -> Self {
+    pub fn new(content: String, should_skip_comments: bool) -> Self {
         Self {
             element_stream: ElementStream::new(content.replace("\r\n", "\n").chars().collect()),
             line: 0,
             column: 0,
-            should_skip_comments: true,
+            should_skip_comments,
         }
     }
 

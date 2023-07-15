@@ -22,6 +22,14 @@ fn main() {
         return;
     }
 
+    let mut should_skip_comments = false;
+    for arg in args.iter() {
+        if arg == "--ignore-comments" {
+            should_skip_comments = true;
+            break;
+        }
+    }
+
     let json = match fs::read_to_string(path) {
         Ok(value) => value,
         Err(_) => {
@@ -30,7 +38,7 @@ fn main() {
         }
     };
 
-    let mut tokenizer = Tokenizer::new(json.clone());
+    let mut tokenizer = Tokenizer::new(json.clone(), should_skip_comments);
     let tokens = match tokenizer.process() {
         Ok(tokens) => tokens,
         Err(error) => return print_error(json, error),
