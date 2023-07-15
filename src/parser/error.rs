@@ -10,6 +10,7 @@ pub enum ParserError {
     ExpectedTokenOrToken(Token, Token, Location),
     ExpectedToken(Token, Token, Location),
     UnexpectedToken(Token, Location),
+    DuplicateObjectKey(String, Location),
     UnexpectedEOF,
 }
 
@@ -19,6 +20,7 @@ impl LocatedError for ParserError {
             Self::ExpectedTokenOrToken(_, _, location) => Some(location.clone()),
             Self::ExpectedToken(_, _, location) => Some(location.clone()),
             Self::UnexpectedToken(_, location) => Some(location.clone()),
+            Self::DuplicateObjectKey(_, location) => Some(location.clone()),
             Self::UnexpectedEOF => None,
         }
     }
@@ -36,6 +38,9 @@ impl fmt::Display for ParserError {
             }
 
             Self::UnexpectedToken(token, _) => write!(f, "Unexpected {:?}", token),
+
+            Self::DuplicateObjectKey(key, _) => write!(f, "Duplicate object key {:?}", key),
+
             Self::UnexpectedEOF => write!(f, "Unexpected end-of-file"),
         }
     }

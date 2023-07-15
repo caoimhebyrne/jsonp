@@ -43,7 +43,11 @@ impl Parser {
                 break;
             }
 
-            let (key, value) = self.try_parse_key_value_pair(token, location)?;
+            let (key, value) = self.try_parse_key_value_pair(token, location.clone())?;
+            if map.contains_key(&key) {
+                return Err(ParserError::DuplicateObjectKey(key, location));
+            }
+
             map.insert(key, value);
         }
 
