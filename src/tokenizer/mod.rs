@@ -10,6 +10,7 @@ pub struct Tokenizer {
     element_stream: ElementStream<char>,
     line: usize,
     column: usize,
+    should_skip_comments: bool,
 }
 
 impl Tokenizer {
@@ -18,6 +19,7 @@ impl Tokenizer {
             element_stream: ElementStream::new(content.replace("\r\n", "\n").chars().collect()),
             line: 0,
             column: 0,
+            should_skip_comments: true,
         }
     }
 
@@ -40,8 +42,15 @@ impl Tokenizer {
                 '"' => self.try_parse_string()?.into(),
 
                 '/' => {
-                    self.skip_comment();
-                    continue;
+                    if self.should_skip_comments {
+                        self.skip_comment();
+                        continue;
+                    } else {
+                        return Err(TokenizerError::UnexpectedCharacter(
+                            character,
+                            self.location(),
+                        ));
+                    }
                 }
 
                 ' ' => continue,
