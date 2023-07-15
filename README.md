@@ -11,7 +11,7 @@ $ cargo install -- path .
   Installing jsonp v0.1.0
     Finished release [optimized] target(s) in 0.00s
   Installing ~/.cargo/bin/jsonp
-    Installed package `jsonp v0.1.0 (executable `jsonp`)
+    Installed package `jsonp v0.1.0` (executable `jsonp`)
 
 $ jsonp ./examples/simple.json
 Object(
