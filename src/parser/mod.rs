@@ -57,27 +57,26 @@ impl Parser {
         let mut values = vec![];
 
         loop {
-            // We need to check if the next token is a closing bracket, if it is, then we are finished parsing.
-            match self.element_stream.peek() {
-                Some((token, _)) => {
-                    if token == Token::CloseSquareBracket {
-                        self.element_stream.skip();
-                        self.check_for_trailing_comma()?;
-                        break;
-                    }
-                }
-
-                None => return Err(ParserError::UnexpectedEOF),
-            }
-
             let value = self.try_parse_value()?;
             values.push(value);
 
-            let (next_token, location) = self.try_consume()?;
+            // If the next token is not a comma, or a square closing bracket, the array is invalid.
+            // If the next token is a closing square bracket, then we are finished parsing the array.
+            let (next_token, _) = self.try_consume()?;
             match next_token {
                 Token::Comma => {}
                 Token::CloseSquareBracket => break,
-                _ => return Err(ParserError::UnexpectedToken(next_token, location)),
+                _ => {
+                    let (_, previous_location) = self.try_previous(2)?;
+                    return Err(ParserError::ExpectedTokenOrToken(
+                        Token::CloseSquareBracket,
+                        Token::Comma,
+                        Location {
+                            line: previous_location.line,
+                            column: previous_location.column + 1,
+                        },
+                    ));
+                }
             }
         }
 
@@ -187,6 +186,13 @@ impl Parser {
 
     fn try_peek(&mut self) -> Result<TokenAndLocation, ParserError> {
         match self.element_stream.peek() {
+            Some(value) => Ok(value),
+            None => Err(ParserError::UnexpectedEOF),
+        }
+    }
+
+    fn try_previous(&mut self, by: usize) -> Result<TokenAndLocation, ParserError> {
+        match self.element_stream.previous(by) {
             Some(value) => Ok(value),
             None => Err(ParserError::UnexpectedEOF),
         }
