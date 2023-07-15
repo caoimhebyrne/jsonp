@@ -88,7 +88,7 @@ impl Parser {
     pub fn try_parse_value(&mut self) -> Result<JsonValue, ParserError> {
         let (first_token, location) = self.try_peek()?;
 
-        let value = match first_token {
+        let value = match first_token.clone() {
             Token::String(string) => {
                 // This token requires no extra parsing, we can consume this token.
                 self.element_stream.skip();
@@ -101,6 +101,19 @@ impl Parser {
                 self.element_stream.skip();
 
                 JsonValue::Number(number.into())
+            }
+
+            Token::Identifier(identifier) => {
+                // This token requires no extra parsing, we can consume this token.
+                self.element_stream.skip();
+
+                match identifier.as_str() {
+                    "true" => JsonValue::Boolean(true),
+                    "false" => JsonValue::Boolean(false),
+                    "null" => JsonValue::Null,
+
+                    _ => return Err(ParserError::UnexpectedToken(first_token, location)),
+                }
             }
 
             // An open square bracket denotes an array

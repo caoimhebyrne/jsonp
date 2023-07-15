@@ -3,6 +3,7 @@ use crate::location::Location;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Token {
     String(String),
+    Identifier(String),
     Number(u32),
 
     OpenBrace,

@@ -38,6 +38,7 @@ impl Tokenizer {
                 ']' => Some(Token::CloseSquareBracket),
 
                 '"' => self.try_parse_string()?.into(),
+                ' ' => continue,
 
                 '\n' => {
                     self.line += 1;
@@ -49,8 +50,8 @@ impl Tokenizer {
                     // Try to see if it's a number
                     if character.is_numeric() {
                         self.try_parse_number(character)
-                    } else if character == ' ' {
-                        None
+                    } else if character.is_alphanumeric() {
+                        self.try_parse_identifier(character)?.into()
                     } else {
                         return Err(TokenizerError::UnexpectedCharacter(
                             character,
@@ -96,6 +97,30 @@ impl Tokenizer {
 
         let string = characters.into_iter().collect();
         Ok(Token::String(string))
+    }
+
+    fn try_parse_identifier(&mut self, character: char) -> Result<Token, TokenizerError> {
+        let mut characters = vec![character];
+
+        loop {
+            let Some(character) = self.element_stream.peek() else {
+                break;
+            };
+
+            if !character.is_alphanumeric() {
+                break;
+            }
+
+            if character == '\n' {
+                return Err(TokenizerError::UnexpectedCharacter(' ', self.location()));
+            }
+
+            self.skip();
+            characters.push(character);
+        }
+
+        let string = characters.into_iter().collect();
+        Ok(Token::Identifier(string))
     }
 
     fn try_parse_number(&mut self, character: char) -> Option<Token> {

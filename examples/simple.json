@@ -2,6 +2,9 @@
   "hello": "world",
   "abc": 123,
   "test": {
-    "array": [1, 2, 3]
+    "array": [1, 2, 3],
+    "boolean": true,
+    "another_boolean": false,
+    "value": null
   }
 }
