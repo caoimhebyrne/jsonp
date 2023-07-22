@@ -175,7 +175,7 @@ impl Parser {
         };
 
         if token == Token::Comma {
-            return Err(ParserError::UnexpectedToken(token, location));
+            Err(ParserError::UnexpectedToken(token, location))
         } else {
             Ok(())
         }

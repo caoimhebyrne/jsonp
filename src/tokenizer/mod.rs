@@ -185,10 +185,10 @@ impl Tokenizer {
     }
 
     fn is_json_number(character: char) -> bool {
-        return character == '-'
+        character == '-'
             || character == '.'
             || character == 'e'
             || character == 'E'
-            || character.is_numeric();
+            || character.is_numeric()
     }
 }
